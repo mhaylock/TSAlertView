@@ -47,23 +47,24 @@
 	[_widthTextField resignFirstResponder];
 	[_maxHeightTextField resignFirstResponder];
 	
-	TSAlertView* av = [[[TSAlertView alloc] init] autorelease];
-	av.title = _titleTextField.text;
-	av.message = _messageTextView.text;
+	_alertView = [[TSAlertView alloc] init];
+    
+	_alertView.title = _titleTextField.text;
+	_alertView.message = _messageTextView.text;
 	
 	for ( int i = 0 ; i < [_buttonCountTextField.text intValue] ; i++ )
 	{
-		[av addButtonWithTitle: [NSString stringWithFormat: @"Button %d", i]];
+		[_alertView addButtonWithTitle: [NSString stringWithFormat: @"Button %d", i]];
 	}
 	
-	av.style = _hasInputFieldSwitch.on ? TSAlertViewStyleInput : TSAlertViewStyleNormal;
-	av.buttonLayout = _stackedSwitch.on ? TSAlertViewButtonLayoutStacked : TSAlertViewButtonLayoutNormal;
-	av.usesMessageTextView = _usesTextViewSwitch.on;
+	_alertView.style = _hasInputFieldSwitch.on ? TSAlertViewStyleInput : TSAlertViewStyleNormal;
+	_alertView.buttonLayout = _stackedSwitch.on ? TSAlertViewButtonLayoutStacked : TSAlertViewButtonLayoutNormal;
+	_alertView.usesMessageTextView = _usesTextViewSwitch.on;
 	
-	av.width = [_widthTextField.text floatValue];
-	av.maxHeight = [_maxHeightTextField.text floatValue];
+	_alertView.width = [_widthTextField.text floatValue];
+	_alertView.maxHeight = [_maxHeightTextField.text floatValue];
 
-	[av show];
+	[_alertView show];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -86,9 +87,6 @@
 }
 
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 
 @end

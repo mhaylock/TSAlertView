@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class TSAlertView;
 
 @interface TSAVDemoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 {
@@ -26,6 +27,8 @@
 	IBOutlet UISwitch*			_usesTextViewSwitch;
 	
 	IBOutlet UISwitch*			_hasInputFieldSwitch;
+    
+    TSAlertView *_alertView;
 }
 
 - (void) onAddMore: (id) sender;

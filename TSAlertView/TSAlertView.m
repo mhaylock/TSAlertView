@@ -10,7 +10,7 @@
 @interface TSAlertOverlayWindow : UIWindow
 {
 }
-@property (nonatomic,retain) UIWindow* oldKeyWindow;
+@property (nonatomic,strong) UIWindow* oldKeyWindow;
 @end
 
 @implementation  TSAlertOverlayWindow
@@ -53,15 +53,6 @@
 	CGGradientRelease(backgroundGradient);
 }
 
-- (void) dealloc
-{
-	self.oldKeyWindow = nil;
-	
-	NSLog( @"TSAlertView: TSAlertOverlayWindow dealloc" );
-	
-	[super dealloc];
-}
-
 @end
 
 @interface TSAlertView (private)
@@ -102,12 +93,6 @@
 						 av.center = CGPointMake( CGRectGetMidX( self.view.bounds ), CGRectGetMidY( self.view.bounds ) );;
 						 av.frame = CGRectIntegral( av.frame );
 					 }];
-}
-
-- (void) dealloc
-{
-	NSLog( @"TSAlertView: TSAlertViewController dealloc" );
-	[super dealloc];
 }
 
 @end
@@ -209,18 +194,7 @@ const CGFloat kTSAlertView_ColumnMargin = 10.0;
 
 - (void)dealloc 
 {
-	[_backgroundImage release];
-	[_buttons release];
-	[_titleLabel release];
-	[_messageLabel release];
-	[_messageTextView release];
-	[_messageTextViewMaskImageView release];
-	
-	[[NSNotificationCenter defaultCenter] removeObserver: self ];
-	
-	NSLog( @"TSAlertView: TSAlertOverlayWindow dealloc" );
-	
-    [super dealloc];
+	[[NSNotificationCenter defaultCenter] removeObserver: self ];	
 }
 
 
@@ -327,7 +301,7 @@ const CGFloat kTSAlertView_ColumnMargin = 10.0;
 {
 	if ( _buttons == nil )
 	{
-		_buttons = [[NSMutableArray arrayWithCapacity:4] retain];
+		_buttons = [NSMutableArray arrayWithCapacity:4];
 	}
 	
 	return _buttons;
@@ -547,26 +521,26 @@ const CGFloat kTSAlertView_ColumnMargin = 10.0;
 	// the one place we release the window we allocated in "show"
 	// this will propogate releases to us (TSAlertView), and our TSAlertViewController
 	
-	[self.window release];
+	_overlayWindow = nil;
 }
 
 - (void) show
 {
 	[[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate:[NSDate date]];
 	
-	TSAlertViewController* avc = [[[TSAlertViewController alloc] init] autorelease];
+	TSAlertViewController* avc = [[TSAlertViewController alloc] init];
 	avc.view.backgroundColor = [UIColor clearColor];
 	
 	// $important - the window is released only when the user clicks an alert view button
-	TSAlertOverlayWindow* ow = [[TSAlertOverlayWindow alloc] initWithFrame: [UIScreen mainScreen].bounds];
-	ow.alpha = 0.0;
-	ow.backgroundColor = [UIColor clearColor];
-	ow.rootViewController = avc;
-	[ow makeKeyAndVisible];
+	_overlayWindow = [[TSAlertOverlayWindow alloc] initWithFrame: [UIScreen mainScreen].bounds];
+	_overlayWindow.alpha = 0.0;
+	_overlayWindow.backgroundColor = [UIColor clearColor];
+	_overlayWindow.rootViewController = avc;
+	[_overlayWindow makeKeyAndVisible];
 	
 	// fade in the window
 	[UIView animateWithDuration: 0.2 animations: ^{
-		ow.alpha = 1;
+		_overlayWindow.alpha = 1;
 	}];
 	
 	// add and pulse the alertview
